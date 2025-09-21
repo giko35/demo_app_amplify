@@ -3,7 +3,7 @@ const App = () => {
 
     const fetchMessage = () => {
         setMessage("Loading...");
-        const apiUrl = `${process.env.REACT_APP_API_BASE_URL}/api/hello`;
+        const apiUrl = `${config.API_BASE_URL}/api/hello`;
         fetch(apiUrl)
             .then((res) => res.json())
             .then((data) => setMessage(data.message))

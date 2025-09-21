@@ -10,3 +10,6 @@ backend/
 .idea/
 .vscode/
 *.swp
+
+# Frontend config
+frontend/config.js
