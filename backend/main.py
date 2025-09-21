@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from mangum import Mangum
 
 app = FastAPI()
 
@@ -15,3 +16,5 @@ app.add_middleware(
 @app.get("/api/hello")
 def read_root():
     return {"message": "Hello from backend!"}
+
+handler = Mangum(app)
