@@ -1,23 +1,63 @@
 const App = () => {
-    const [message, setMessage] = React.useState("");
+    const [comment, setComment] = React.useState("");
+    const [apiResponse, setApiResponse] = React.useState("");
+    const [isLoading, setIsLoading] = React.useState(false);
 
-    const fetchMessage = () => {
-        setMessage("Loading...");
-        const apiUrl = `${config.API_BASE_URL}/api/hello`;
-        fetch(apiUrl)
+    const handleSubmitComment = () => {
+        setIsLoading(true);
+        setApiResponse("");
+        const apiUrl = `${config.API_BASE_URL}/api/submit-comment`;
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text: comment }),
+        })
             .then((res) => res.json())
-            .then((data) => setMessage(data.message))
+            .then((data) => {
+                setApiResponse(data.message);
+                setComment(""); // Clear comment box on success
+            })
             .catch((err) => {
                 console.error(err);
-                setMessage("Error fetching data from the backend.");
-            });
+                setApiResponse("Error submitting comment.");
+            })
+            .finally(() => setIsLoading(false));
+    };
+
+    const handleGenerateCanned = () => {
+        setIsLoading(true);
+        setApiResponse("");
+        const apiUrl = `${config.API_BASE_URL}/api/canned-response`;
+        fetch(apiUrl)
+            .then((res) => res.json())
+            .then((data) => setComment(data.message)) // Populate comment box
+            .catch((err) => {
+                console.error(err);
+                setApiResponse("Error fetching canned response.");
+            })
+            .finally(() => setIsLoading(false));
     };
 
     return (
         <div>
-            <h1>Hello from React!</h1>
-            <button onClick={fetchMessage}>Get Message from Backend</button>
-            {message && <p>Message from backend: {message}</p>}
+            <h1>Comment Page</h1>
+            <textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Write your comment here..."
+                rows="4"
+                cols="50"
+                style={{ display: 'block', marginBottom: '10px' }}
+            />
+            <button onClick={handleSubmitComment} disabled={isLoading || !comment}>
+                {isLoading ? 'Submitting...' : 'Submit Comment'}
+            </button>
+            <button onClick={handleGenerateCanned} disabled={isLoading}>
+                {isLoading ? 'Generating...' : 'Generate Canned Response'}
+            </button>
+            {apiResponse && <p style={{ marginTop: '10px' }}>{apiResponse}</p>}
         </div>
     );
 };
